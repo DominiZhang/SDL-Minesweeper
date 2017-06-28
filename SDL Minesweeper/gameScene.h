@@ -28,14 +28,16 @@ private:
 
 	void init();
 	void setBomb();
-	void exploreBomb(int &num,int x,int y);
 	void setNum();
+	void saveTime();
 
 	void digBomb(int x,int y);
 	void surchNum(int x,int y, int deep);
 
 	void update_time();
 	void update_flag();
+	void update_win();
+	void update_lose();
 
 	bool isWin();
 
@@ -43,6 +45,10 @@ private:
 	void rend_map();
 	void rend_loading();
 	void rend_cursor();
+	void rend_button();
+	void rend_buttoneffect();
+	void rend_lose();
+	void rend_win();
 
 private:
 	Window *win;
@@ -54,14 +60,16 @@ private:
 	int time_mm;
 	int bomb;
 	int flag;
+	int count;
 
 	int mapx;
 	int mapy;
 	int mapw;
 	int maph;
 	int map[30][16][2];
-
+	
 	bool isclick;
+	bool issetbomb;
 	bool isover;
 	bool isescape;
 };

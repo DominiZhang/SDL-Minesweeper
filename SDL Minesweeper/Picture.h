@@ -29,6 +29,9 @@ public:
 	SDL_Texture *expert = nullptr;
 	SDL_Texture *highest = nullptr;
 	SDL_Texture *escape = nullptr;
+	SDL_Texture *menu = nullptr;
+	SDL_Texture *again = nullptr;
+	SDL_Texture *returngame = nullptr;
 
 	SDL_Texture *num1 = nullptr;
 	SDL_Texture *num2 = nullptr;
@@ -46,6 +49,7 @@ public:
 	SDL_Texture *unknown = nullptr;
 
 	SDL_Texture *cursor = nullptr;
+	SDL_Texture *effect_goldlight = nullptr;
 
 	SDL_Texture *bomb_logo = nullptr;
 	SDL_Texture *timer_logo = nullptr;

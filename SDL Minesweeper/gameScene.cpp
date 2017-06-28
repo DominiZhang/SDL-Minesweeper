@@ -72,16 +72,18 @@ void gameScene::update()
 	{
 	case Gaming:
 		if (isclick)
+		{
 			update_time();
-		update_flag();
-		if (isWin())
-			state = Win;
+			update_flag();
+			if (isWin())
+				state = Win;
+		}
 		break;
 	case Win:
-		isover = true;
+		update_win();
 		break;
 	case Lose:
-		isover = true;
+		update_lose();
 		break;
 	default:
 		break;
@@ -95,8 +97,29 @@ void gameScene::rend()
 	rend_background();
 	rend_map();
 
-	if (state == Gaming)
-		rend_cursor();
+	switch (state)
+	{
+	case Gaming:
+		if (count > 0)
+		{
+			rend_loading();
+			count--;
+		}
+		else
+		{
+			rend_cursor();
+		}
+		break;
+	case Win:
+		rend_win();
+		break;
+	case Lose:
+		rend_lose();
+		break;
+	}
+
+	rend_buttoneffect();
+	rend_button();
 
 	win->Present();
 }
@@ -119,28 +142,68 @@ void gameScene::mouseEvent()
 
 	if (events.button.button == SDL_BUTTON_LEFT)
 	{
-		if ((x >= mapx&&x <= mapx + mapw * 20) && (y >= mapy&&y <= mapy + maph * 20))
+		switch (state)
 		{
-			if (!isclick)
-				isclick = true;
-
-			digBomb((x - mapx) / 20, (y - mapy) / 20);
+		case Gaming:
+			if ((x >= mapx&&x <= mapx + mapw * 20) && (y >= mapy&&y <= mapy + maph * 20))
+			{
+				if (!isclick)
+					isclick = true;
+				if (issetbomb)
+				{
+					setBomb();
+					setNum();
+					issetbomb = false;
+				}
+				digBomb((x - mapx) / 20, (y - mapy) / 20);
+			}
+			break;
+		case Win:
+			if ((x > 100 && x < 100 + 250) && (y > Win_H - 100 && y < Win_H - 100 + 50))
+			{
+				saveTime();
+				isover = true;
+			}
+			else if ((x > Win_L - 100 - 250 && x < Win_L - 100) && (y > Win_H - 100 && y < Win_H - 100 + 50))
+			{
+				saveTime();
+				init();
+			}
+			break;
+		case Lose:
+			if ((x > 100 && x < 100 + 250) && (y > Win_H - 100 && y < Win_H - 100 + 50))
+			{
+				isover = true;
+			}
+			else if ((x > Win_L - 100 - 250 && x < Win_L - 100) && (y > Win_H - 100 && y < Win_H - 100 + 50))
+			{
+				init();
+			}
+			break;
 		}
 	}
 
 	if (events.button.button == SDL_BUTTON_RIGHT)
 	{
-		if (!isclick)
-			isclick = true;
-
-		if ((x >= mapx&&x <= mapx + mapw * 20) && (y >= mapy&&y <= mapy + maph * 20))
+		switch (state)
 		{
-			if (map[(x - mapx) / 20][(y - mapy) / 20][1] >= 0)
+		case Gaming:
+			if ((x >= mapx&&x <= mapx + mapw * 20) && (y >= mapy&&y <= mapy + maph * 20))
 			{
-				map[(x - mapx) / 20][(y - mapy) / 20][1]++;
-				if (map[(x - mapx) / 20][(y - mapy) / 20][1] >= 3)
-					map[(x - mapx) / 20][(y - mapy) / 20][1] = 0;
+				if (map[(x - mapx) / 20][(y - mapy) / 20][1] >= 0)
+				{
+					map[(x - mapx) / 20][(y - mapy) / 20][1]++;
+					if (map[(x - mapx) / 20][(y - mapy) / 20][1] >= 3)
+						map[(x - mapx) / 20][(y - mapy) / 20][1] = 0;
+				}
 			}
+			break;
+		case Win:
+
+			break;
+		case Lose:
+
+			break;
 		}
 	}
 }
@@ -157,13 +220,12 @@ void gameScene::keyEvent()
 
 void gameScene::init()
 {
-	rend_loading();
-
 	isclick = false;
-
+	issetbomb = true;
 	time = 0;
 	time_mm = 0;
 	flag = bomb;
+	count = 30;
 
 	state = Gaming;
 
@@ -174,8 +236,6 @@ void gameScene::init()
 			map[i][j][1] = 0;
 		}
 
-	setBomb();
-	setNum();
 
 }
 
@@ -183,38 +243,19 @@ void gameScene::setBomb()
 {
 	int i = bomb;
 	int x, y;
+	int mx, my;
+	mx = (events.motion.x - mapx) / 20;
+	my = (events.motion.y - mapy) / 20;
 	while (i)
 	{
-		x = (Myrand(mapw, 0) + Myrand(mapw, 0)) % mapw;
-		y = (Myrand(maph, 0) + Myrand(maph, 0)) % maph;
-		if (map[x][y][0] != 9)
+		x = Myrand(mapw, 0) % mapw;
+		y = Myrand(maph, 0) % maph;
+		if (map[x][y][0] != 9 && (x != mx&&y != my))
 		{
 			map[x][y][0] = 9;
 			i--;
 		}
-		else
-			exploreBomb(i, x, y);
 	}
-}
-
-void gameScene::exploreBomb(int & num, int x, int y)
-{
-	int direction = Myrand(8, 0);
-	int distance = Myrand(6, 3);
-	for (int j = 0; j < 8; j++)
-	{
-		if ((x + direct[direction][0] + distance >= 0 && x + direct[direction][0] + distance < mapw) && (y + direct[direction][1] + distance >= 0 && y + direct[direction][1] + distance < maph))
-			if (map[x + direct[direction][0] + distance][y + direct[direction][1] + distance][0] != 9)
-			{
-				map[x + direct[direction][0] + distance][y + direct[direction][1] + distance][0] = 9;
-				num--;
-				return;
-			}
-		direction--;
-		if (direction > 8)
-			direction = 0;
-	}
-
 }
 
 void gameScene::setNum()
@@ -239,9 +280,15 @@ void gameScene::setNum()
 
 }
 
+void gameScene::saveTime()
+{
+	if (time > readHiScore(level)|| readHiScore(level)>=10000)
+		saveHiScore(time,level);
+}
+
 void gameScene::digBomb(int x, int y)
 {
-	if (map[x][y][1] == 0|| map[x][y][1] == 2)
+	if (map[x][y][1] == 0 || map[x][y][1] == 2)
 	{
 		map[x][y][1] = -1;
 		if (map[x][y][0] == 9)
@@ -250,17 +297,17 @@ void gameScene::digBomb(int x, int y)
 		}
 		else
 		{
-			surchNum(x, y,1);
+			surchNum(x, y, 1);
 		}
 	}
 }
 
-void gameScene::surchNum(int x, int y,int deep)
+void gameScene::surchNum(int x, int y, int deep)
 {
 	for (int k = 0; k < 8; k++)
 		if ((x + direct[k][0] >= 0 && x + direct[k][0] < mapw) && (y + direct[k][1] >= 0 && y + direct[k][1] < maph))
 		{
-			if (map[x + direct[k][0]][y + direct[k][1]][1] == 0|| map[x + direct[k][0]][y + direct[k][1]][1] == 2)
+			if (map[x + direct[k][0]][y + direct[k][1]][1] == 0 || map[x + direct[k][0]][y + direct[k][1]][1] == 2)
 				if (map[x + direct[k][0]][y + direct[k][1]][0] > 0 && map[x + direct[k][0]][y + direct[k][1]][0] < 9)
 				{
 					if (deep > 1)
@@ -269,7 +316,7 @@ void gameScene::surchNum(int x, int y,int deep)
 				else if (map[x + direct[k][0]][y + direct[k][1]][0] == 0)
 				{
 					map[x + direct[k][0]][y + direct[k][1]][1] = -1;
-					surchNum(x + direct[k][0], y + direct[k][1],deep++);
+					surchNum(x + direct[k][0], y + direct[k][1], deep++);
 				}
 				else
 					break;
@@ -296,20 +343,47 @@ void gameScene::update_flag()
 
 }
 
+void gameScene::update_win()
+{
+	if (count < 1000000)
+	{
+		if (count / 3 < mapw)
+		{
+			for (int i = 0; i < maph; i++)
+			{
+				map[count / 3][i][1] = -1;
+			}
+		}
+		count++;
+	}
+}
+
+void gameScene::update_lose()
+{
+	if (count < 1000000)
+	{
+		if (count / 3 < mapw)
+		{
+			for (int i = 0; i < maph; i++)
+			{
+				map[count / 3][i][1] = -1;
+			}
+		}
+		count++;
+	}
+}
+
 bool gameScene::isWin()
 {
 	bool iswin = true;
-	int count = 0;
+
 	for (int i = 0; i < mapw; i++)
 		for (int j = 0; j < maph; j++)
 		{
 			if (map[i][j][1] != -1 && map[i][j][0] != 9)
 				iswin = false;
-			if (map[i][j][1] == 1 && map[i][j][0] == 9)
-				count++;
 		}
-	if(count==bomb)
-		iswin = true;
+
 	return iswin;
 }
 
@@ -412,4 +486,141 @@ void gameScene::rend_cursor()
 
 	if ((x >= mapx&&x <= mapx + mapw * 20) && (y >= mapy&&y <= mapy + maph * 20))
 		win->Draw(win->mPicture->cursor, ((x - mapx) / 20) * 20 + mapx - 1, ((y - mapy) / 20) * 20 + mapy - 1);
+}
+
+void gameScene::rend_button()
+{
+	switch (state)
+	{
+	case gameScene::Gaming:
+
+		break;
+	case gameScene::Win:
+		if (count / 3 - mapw > 5)
+		{
+			win->Draw(win->mPicture->menu, 100, Win_H - 100);
+			win->Draw(win->mPicture->again, Win_L - 350, Win_H - 100);
+		}
+		break;
+	case gameScene::Lose:
+		if (count / 3 - mapw > 5)
+		{
+			win->Draw(win->mPicture->menu, 100, Win_H - 100);
+			win->Draw(win->mPicture->again, Win_L - 350, Win_H - 100);
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void gameScene::rend_buttoneffect()
+{
+	if (events.type == SDL_MOUSEMOTION)
+	{
+		switch (state)
+		{
+		case gameScene::Gaming:
+
+			break;
+		case gameScene::Win:
+			if ((events.motion.x > 100 && events.motion.x < 100 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
+			{
+				boxRGBA(win->getRenderer(), 100 - 2, Win_H - 100 - 2, 100 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
+			}
+			else if ((events.motion.x > Win_L - 350 && events.motion.x < Win_L - 350 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
+			{
+				boxRGBA(win->getRenderer(), Win_L - 350 - 2, Win_H - 100 - 2, Win_L - 350 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
+			}
+			break;
+		case gameScene::Lose:
+			if ((events.motion.x > 100 && events.motion.x < 100 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
+			{
+				boxRGBA(win->getRenderer(), 100 - 2, Win_H - 100 - 2, 100 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
+			}
+			else if ((events.motion.x > Win_L - 350 && events.motion.x < Win_L - 350 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
+			{
+				boxRGBA(win->getRenderer(), Win_L - 350 - 2, Win_H - 100 - 2, Win_L - 350 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void gameScene::rend_lose()
+{
+	if (count / 3 < mapw)
+	{
+		for (int j = 0; j < maph; j++)
+		{
+			win->Draw(win->mPicture->effect_goldlight, mapx + (count / 3) * 20, mapy + j * 20);
+		}
+	}
+	else if (count / 3 - mapw >= 0 && count / 3 - mapw <= 5)
+	{
+		boxRGBA(win->getRenderer(), 0, 0, Win_L, Win_H, 0, 0, 0, (count / 3 - mapw) * 20);
+	}
+	else
+	{
+		boxRGBA(win->getRenderer(), 0, 0, Win_L, Win_H, 0, 0, 0, 100);
+		win->RenderText("Lose", Font_kaiti, 260, 160, 150, SDL_Color{ 255,255,255 });
+
+	}
+
+}
+
+void gameScene::rend_win()
+{
+	if (count / 3 < mapw)
+	{
+		for (int j = 0; j < maph; j++)
+		{
+			win->Draw(win->mPicture->effect_goldlight, mapx + (count / 3) * 20, mapy + j * 20);
+		}
+	}
+	else if (count / 3 - mapw >= 0 && count / 3 - mapw <= 5)
+	{
+		boxRGBA(win->getRenderer(), 0, 0, Win_L, Win_H, 0, 0, 0, (count / 3 - mapw) * 20);
+	}
+	else
+	{
+		boxRGBA(win->getRenderer(), 0, 0, Win_L, Win_H, 0, 0, 0, 100);
+
+
+		int record = readHiScore(level);
+		char buffer[255];
+
+		if (record >= 10000 || time > record)
+		{
+			win->RenderText("New Record", Font_kaiti, 150, 120, 100, SDL_Color{ 255,255,255 });
+			sprintf(buffer, "%3d:%2d", time / 60, time % 60);
+			win->RenderText(buffer, Font_kaiti, 300, 250, 60, SDL_Color{ 255,255,255 });
+			if (time % 60 < 10)
+				win->RenderText("0", Font_kaiti, 420, 250, 60, SDL_Color{ 255,255,255 });
+			if (time / 60 < 10)
+				win->RenderText("0", Font_kaiti, 330, 250, 60, SDL_Color{ 255,255,255 });
+		}
+		else
+		{
+			win->RenderText("Win", Font_kaiti, 330, 100, 100, SDL_Color{ 255,255,255 });
+
+			win->RenderText("Record", Font_kaiti, 250, 210, 50, SDL_Color{ 255,255,255 });
+			sprintf(buffer, "%3d:%2d", time / 60, time % 60);
+			win->RenderText(buffer, Font_kaiti, 400, 200, 60, SDL_Color{ 255,255,255 });
+			if (time % 60 < 10)
+				win->RenderText("0", Font_kaiti, 520, 200, 60, SDL_Color{ 255,255,255 });
+			if (time / 60 < 10)
+				win->RenderText("0", Font_kaiti, 430, 200, 60, SDL_Color{ 255,255,255 });
+
+			win->RenderText("Final Time", Font_kaiti, 150, 310, 50, SDL_Color{ 255,255,255 });
+			sprintf(buffer, "%3d:%2d", time / 60, time % 60);
+			win->RenderText(buffer, Font_kaiti, 400, 300, 60, SDL_Color{ 255,255,255 });
+			if (time % 60 < 10)
+				win->RenderText("0", Font_kaiti, 520, 300, 60, SDL_Color{ 255,255,255 });
+			if (time / 60 < 10)
+				win->RenderText("0", Font_kaiti, 430, 300, 60, SDL_Color{ 255,255,255 });
+		}
+	}
 }

@@ -45,7 +45,7 @@ int Myrand(int max,int min)
 		throw std::runtime_error("Myrand max==0");
 
 	int num;
-	srand((unsigned)time(NULL));//选取种子文件
+	srand((unsigned)time(NULL)+rand());//选取种子文件
 	do
 	{
 		num = (int)rand() % max;

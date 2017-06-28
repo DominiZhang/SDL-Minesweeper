@@ -15,6 +15,9 @@ Picture::Picture(SDL_Renderer *Ren) :Renderer(Ren)
 	expert = LoadImage("data/Picture/button/expert.png");
 	highest = LoadImage("data/Picture/button/highest.png");
 	escape = LoadImage("data/Picture/button/escape.png");
+	menu = LoadImage("data/Picture/button/menu.png");
+	again = LoadImage("data/Picture/button/again.png");
+	returngame = LoadImage("data/Picture/button/returngame.png");
 
 	num1 = LoadImage("data/Picture/number/1.png");
 	num2 = LoadImage("data/Picture/number/2.png");
@@ -32,6 +35,7 @@ Picture::Picture(SDL_Renderer *Ren) :Renderer(Ren)
 	unknown = LoadImage("data/Picture/other/unknown.png");
 
 	cursor = LoadImage("data/Picture/other/cursor.png");
+	effect_goldlight = LoadImage("data/Picture/other/effect_goldlight.png");
 
 	bomb_logo = LoadImage("data/Picture/other/bomb_logo.png");
 	timer_logo = LoadImage("data/Picture/other/timer_logo.png");
@@ -50,6 +54,9 @@ Picture::~Picture()
 	delimage(expert);
 	delimage(highest);
 	delimage(escape);
+	delimage(menu);
+	delimage(again);
+	delimage(returngame);
 
 	delimage(num1);
 	delimage(num2);
@@ -67,6 +74,7 @@ Picture::~Picture()
 	delimage(unknown);
 
 	delimage(cursor);
+	delimage(effect_goldlight);
 
 	delimage(bomb_logo);
 	delimage(timer_logo);
