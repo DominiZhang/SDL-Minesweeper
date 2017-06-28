@@ -5,6 +5,8 @@ menuScene::menuScene(Window * win):win(win)
 {
 	isover = false;
 	isescape = false;
+	rend_OpenAD();
+	SDL_Delay(2500);
 }
 
 menuScene::~menuScene()
@@ -160,4 +162,13 @@ void menuScene::rend_buttoneffect()
 			boxRGBA(win->getRenderer(), 40 - 2, 410 - 2, 40 + 250 + 2, 410 + 50 + 2, 0, 122, 204, 255);
 		}
 	}
+}
+
+void menuScene::rend_OpenAD()
+{
+	win->Clear();
+
+	win->Draw(win->mPicture->OpenAD, 0, 0);
+
+	win->Present();
 }

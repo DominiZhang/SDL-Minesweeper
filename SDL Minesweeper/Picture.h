@@ -51,5 +51,6 @@ public:
 	SDL_Texture *timer_logo = nullptr;
 	SDL_Texture *gameBackground = nullptr;
 	SDL_Texture *loading = nullptr;
+	SDL_Texture *OpenAD = nullptr;
 };
 

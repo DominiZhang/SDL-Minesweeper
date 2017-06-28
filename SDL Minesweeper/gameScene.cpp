@@ -74,10 +74,14 @@ void gameScene::update()
 		if (isclick)
 			update_time();
 		update_flag();
+		if (isWin())
+			state = Win;
 		break;
 	case Win:
+		isover = true;
 		break;
 	case Lose:
+		isover = true;
 		break;
 	default:
 		break;
@@ -120,6 +124,7 @@ void gameScene::mouseEvent()
 			if (!isclick)
 				isclick = true;
 
+			digBomb((x - mapx) / 20, (y - mapy) / 20);
 		}
 	}
 
@@ -170,7 +175,7 @@ void gameScene::init()
 		}
 
 	setBomb();
-	foundNum();
+	setNum();
 
 }
 
@@ -180,19 +185,40 @@ void gameScene::setBomb()
 	int x, y;
 	while (i)
 	{
-		x = Myrand(mapw, 0);
-		y = Myrand(maph, 0);
+		x = (Myrand(mapw, 0) + Myrand(mapw, 0)) % mapw;
+		y = (Myrand(maph, 0) + Myrand(maph, 0)) % maph;
 		if (map[x][y][0] != 9)
 		{
 			map[x][y][0] = 9;
 			i--;
 		}
+		else
+			exploreBomb(i, x, y);
 	}
 }
 
-void gameScene::foundNum()
+void gameScene::exploreBomb(int & num, int x, int y)
 {
-	int direct[][2] = { {0,-1},{1,-1},{1,0},{1,1},{0,1},{-1,1},{-1,0},{-1,-1} };
+	int direction = Myrand(8, 0);
+	int distance = Myrand(6, 3);
+	for (int j = 0; j < 8; j++)
+	{
+		if ((x + direct[direction][0] + distance >= 0 && x + direct[direction][0] + distance < mapw) && (y + direct[direction][1] + distance >= 0 && y + direct[direction][1] + distance < maph))
+			if (map[x + direct[direction][0] + distance][y + direct[direction][1] + distance][0] != 9)
+			{
+				map[x + direct[direction][0] + distance][y + direct[direction][1] + distance][0] = 9;
+				num--;
+				return;
+			}
+		direction--;
+		if (direction > 8)
+			direction = 0;
+	}
+
+}
+
+void gameScene::setNum()
+{
 	int count;
 
 	for (int i = 0; i < mapw; i++)
@@ -203,7 +229,7 @@ void gameScene::foundNum()
 				count = 0;
 				for (int k = 0; k < 8; k++)
 				{
-					if ((i + direct[k][0] >= 0 && i + direct[k][0] <= mapw) && (j + direct[k][1] >= 0 && j + direct[k][1] <= maph))
+					if ((i + direct[k][0] >= 0 && i + direct[k][0] < mapw) && (j + direct[k][1] >= 0 && j + direct[k][1] < maph))
 						if (map[i + direct[k][0]][j + direct[k][1]][0] == 9)
 							count++;
 				}
@@ -211,6 +237,43 @@ void gameScene::foundNum()
 			}
 		}
 
+}
+
+void gameScene::digBomb(int x, int y)
+{
+	if (map[x][y][1] == 0|| map[x][y][1] == 2)
+	{
+		map[x][y][1] = -1;
+		if (map[x][y][0] == 9)
+		{
+			state = Lose;
+		}
+		else
+		{
+			surchNum(x, y,1);
+		}
+	}
+}
+
+void gameScene::surchNum(int x, int y,int deep)
+{
+	for (int k = 0; k < 8; k++)
+		if ((x + direct[k][0] >= 0 && x + direct[k][0] < mapw) && (y + direct[k][1] >= 0 && y + direct[k][1] < maph))
+		{
+			if (map[x + direct[k][0]][y + direct[k][1]][1] == 0|| map[x + direct[k][0]][y + direct[k][1]][1] == 2)
+				if (map[x + direct[k][0]][y + direct[k][1]][0] > 0 && map[x + direct[k][0]][y + direct[k][1]][0] < 9)
+				{
+					if (deep > 1)
+						map[x + direct[k][0]][y + direct[k][1]][1] = -1;
+				}
+				else if (map[x + direct[k][0]][y + direct[k][1]][0] == 0)
+				{
+					map[x + direct[k][0]][y + direct[k][1]][1] = -1;
+					surchNum(x + direct[k][0], y + direct[k][1],deep++);
+				}
+				else
+					break;
+		}
 }
 
 void gameScene::update_time()
@@ -230,7 +293,24 @@ void gameScene::update_flag()
 		for (int j = 0; j < maph; j++)
 			if (map[i][j][1] == 1)
 				flag--;
-		
+
+}
+
+bool gameScene::isWin()
+{
+	bool iswin = true;
+	int count = 0;
+	for (int i = 0; i < mapw; i++)
+		for (int j = 0; j < maph; j++)
+		{
+			if (map[i][j][1] != -1 && map[i][j][0] != 9)
+				iswin = false;
+			if (map[i][j][1] == 1 && map[i][j][0] == 9)
+				count++;
+		}
+	if(count==bomb)
+		iswin = true;
+	return iswin;
 }
 
 void gameScene::rend_background()
@@ -331,5 +411,5 @@ void gameScene::rend_cursor()
 	y = events.motion.y;
 
 	if ((x >= mapx&&x <= mapx + mapw * 20) && (y >= mapy&&y <= mapy + maph * 20))
-		win->Draw(win->mPicture->cursor, ((x - mapx) / 20)*20+mapx - 1, ((y - mapy) / 20)*20+mapy - 1);
+		win->Draw(win->mPicture->cursor, ((x - mapx) / 20) * 20 + mapx - 1, ((y - mapy) / 20) * 20 + mapy - 1);
 }

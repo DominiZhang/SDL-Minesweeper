@@ -10,6 +10,8 @@ class gameScene
 		Lose
 	};
 
+	int direct[8][2] = { { 0,-1 },{ 1,-1 },{ 1,0 },{ 1,1 },{ 0,1 },{ -1,1 },{ -1,0 },{ -1,-1 } };
+
 public:
 	gameScene(Window *win, int level);
 	~gameScene();
@@ -26,10 +28,16 @@ private:
 
 	void init();
 	void setBomb();
-	void foundNum();
+	void exploreBomb(int &num,int x,int y);
+	void setNum();
+
+	void digBomb(int x,int y);
+	void surchNum(int x,int y, int deep);
 
 	void update_time();
 	void update_flag();
+
+	bool isWin();
 
 	void rend_background();
 	void rend_map();

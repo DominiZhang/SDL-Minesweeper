@@ -20,6 +20,7 @@ private:
 	void rend_background();
 	void rend_button();
 	void rend_buttoneffect();
+	void rend_OpenAD();
 
 private:
 	Window *win;

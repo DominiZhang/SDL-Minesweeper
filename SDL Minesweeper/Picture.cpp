@@ -37,6 +37,7 @@ Picture::Picture(SDL_Renderer *Ren) :Renderer(Ren)
 	timer_logo = LoadImage("data/Picture/other/timer_logo.png");
 	gameBackground = LoadImage("data/Picture/other/gameBackground.png");
 	loading = LoadImage("data/Picture/other/loading.png");
+	OpenAD = LoadImage("data/Picture/other/OpenAD.png");
 }
 
 
@@ -71,6 +72,7 @@ Picture::~Picture()
 	delimage(timer_logo);
 	delimage(gameBackground);
 	delimage(loading);
+	delimage(OpenAD);
 }
 
 /**
