@@ -1,7 +1,5 @@
 #include "gameScene.h"
 
-
-
 gameScene::gameScene(Window *win, int level) :win(win)
 {
 	isover = false;
@@ -235,8 +233,6 @@ void gameScene::init()
 			map[i][j][0] = 0;
 			map[i][j][1] = 0;
 		}
-
-
 }
 
 void gameScene::setBomb()
@@ -277,12 +273,11 @@ void gameScene::setNum()
 				map[i][j][0] = count;
 			}
 		}
-
 }
 
 void gameScene::saveTime()
 {
-	if (time > readHiScore(level)|| readHiScore(level)>=10000)
+	if (time < readHiScore(level)|| readHiScore(level)>=10000)
 		saveHiScore(time,level);
 }
 
@@ -308,6 +303,7 @@ void gameScene::surchNum(int x, int y, int deep)
 		if ((x + direct[k][0] >= 0 && x + direct[k][0] < mapw) && (y + direct[k][1] >= 0 && y + direct[k][1] < maph))
 		{
 			if (map[x + direct[k][0]][y + direct[k][1]][1] == 0 || map[x + direct[k][0]][y + direct[k][1]][1] == 2)
+			{
 				if (map[x + direct[k][0]][y + direct[k][1]][0] > 0 && map[x + direct[k][0]][y + direct[k][1]][0] < 9)
 				{
 					if (deep > 1)
@@ -318,8 +314,7 @@ void gameScene::surchNum(int x, int y, int deep)
 					map[x + direct[k][0]][y + direct[k][1]][1] = -1;
 					surchNum(x + direct[k][0], y + direct[k][1], deep++);
 				}
-				else
-					break;
+			}
 		}
 }
 
@@ -524,23 +519,29 @@ void gameScene::rend_buttoneffect()
 
 			break;
 		case gameScene::Win:
-			if ((events.motion.x > 100 && events.motion.x < 100 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
+			if (count / 3 - mapw > 5)
 			{
-				boxRGBA(win->getRenderer(), 100 - 2, Win_H - 100 - 2, 100 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
-			}
-			else if ((events.motion.x > Win_L - 350 && events.motion.x < Win_L - 350 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
-			{
-				boxRGBA(win->getRenderer(), Win_L - 350 - 2, Win_H - 100 - 2, Win_L - 350 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
+				if ((events.motion.x > 100 && events.motion.x < 100 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
+				{
+					boxRGBA(win->getRenderer(), 100 - 2, Win_H - 100 - 2, 100 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
+				}
+				else if ((events.motion.x > Win_L - 350 && events.motion.x < Win_L - 350 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
+				{
+					boxRGBA(win->getRenderer(), Win_L - 350 - 2, Win_H - 100 - 2, Win_L - 350 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
+				}
 			}
 			break;
 		case gameScene::Lose:
-			if ((events.motion.x > 100 && events.motion.x < 100 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
+			if (count / 3 - mapw > 5)
 			{
-				boxRGBA(win->getRenderer(), 100 - 2, Win_H - 100 - 2, 100 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
-			}
-			else if ((events.motion.x > Win_L - 350 && events.motion.x < Win_L - 350 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
-			{
-				boxRGBA(win->getRenderer(), Win_L - 350 - 2, Win_H - 100 - 2, Win_L - 350 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
+				if ((events.motion.x > 100 && events.motion.x < 100 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
+				{
+					boxRGBA(win->getRenderer(), 100 - 2, Win_H - 100 - 2, 100 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
+				}
+				else if ((events.motion.x > Win_L - 350 && events.motion.x < Win_L - 350 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
+				{
+					boxRGBA(win->getRenderer(), Win_L - 350 - 2, Win_H - 100 - 2, Win_L - 350 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
+				}
 			}
 			break;
 		default:
