@@ -71,6 +71,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>D:\SDL2-2.0.5\ExceptLib\SDL2_gfx-1.0.3;D:\SDL2-2.0.5\ExceptLib\SDL2_image-2.0.1\include;D:\SDL2-2.0.5\ExceptLib\SDL2_mixer-2.0.1\include;D:\SDL2-2.0.5\ExceptLib\SDL2_ttf-2.0.14\include;D:\SDL2-2.0.5\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\SDL2-2.0.5\ExceptLib\SDL2_gfx-1.0.3\lib;D:\SDL2-2.0.5\ExceptLib\SDL2_image-2.0.1\lib\x86;D:\SDL2-2.0.5\ExceptLib\SDL2_mixer-2.0.1\lib\x86;D:\SDL2-2.0.5\ExceptLib\SDL2_ttf-2.0.14\lib\x86;D:\SDL2-2.0.5\lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -90,7 +92,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -142,6 +144,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="functions.cpp" />
+    <ClCompile Include="gameloop.cpp" />
+    <ClCompile Include="gameScene.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="mainloop.cpp" />
+    <ClCompile Include="menuScene.cpp" />
+    <ClCompile Include="Music.cpp" />
+    <ClCompile Include="Picture.cpp" />
+    <ClCompile Include="recordloop.cpp" />
+    <ClCompile Include="recordScene.cpp" />
+    <ClCompile Include="Window.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="functions.h" />
+    <ClInclude Include="gameScene.h" />
+    <ClInclude Include="menuScene.h" />
+    <ClInclude Include="Music.h" />
+    <ClInclude Include="Picture.h" />
+    <ClInclude Include="recordScene.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

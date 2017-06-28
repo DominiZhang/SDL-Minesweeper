@@ -13,5 +13,72 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\Scene">
+      <UniqueIdentifier>{ced9f3fc-0383-493d-80a8-fde0612f6275}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Scene">
+      <UniqueIdentifier>{c2d48713-1810-4800-8b87-082f2347b603}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Loop">
+      <UniqueIdentifier>{83cd0f52-96ec-44a7-a633-c16931a8e7d8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="functions.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Music.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Picture.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="menuScene.cpp">
+      <Filter>源文件\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="recordScene.cpp">
+      <Filter>源文件\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="mainloop.cpp">
+      <Filter>源文件\Loop</Filter>
+    </ClCompile>
+    <ClCompile Include="recordloop.cpp">
+      <Filter>源文件\Loop</Filter>
+    </ClCompile>
+    <ClCompile Include="gameScene.cpp">
+      <Filter>源文件\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="gameloop.cpp">
+      <Filter>源文件\Loop</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="functions.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Music.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Picture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="menuScene.h">
+      <Filter>头文件\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="recordScene.h">
+      <Filter>头文件\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="gameScene.h">
+      <Filter>头文件\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
