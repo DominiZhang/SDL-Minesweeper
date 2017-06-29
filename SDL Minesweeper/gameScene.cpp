@@ -630,7 +630,7 @@ void gameScene::rend_win()
 		int record = readHiScore(level);
 		char buffer[255];
 
-		if (record >= 10000 || time > record)
+		if (record >= 10000 || time < record)
 		{
 			win->RenderText("New Record", Font_kaiti, 150, 120, 100, SDL_Color{ 255,255,255 });
 			sprintf(buffer, "%3d:%2d", time / 60, time % 60);
