@@ -645,11 +645,11 @@ void gameScene::rend_win()
 			win->RenderText("Win", Font_kaiti, 330, 100, 100, SDL_Color{ 255,255,255 });
 
 			win->RenderText("Record", Font_kaiti, 250, 210, 50, SDL_Color{ 255,255,255 });
-			sprintf(buffer, "%3d:%2d", time / 60, time % 60);
+			sprintf(buffer, "%3d:%2d", record / 60, record % 60);
 			win->RenderText(buffer, Font_kaiti, 400, 200, 60, SDL_Color{ 255,255,255 });
-			if (time % 60 < 10)
+			if (record % 60 < 10)
 				win->RenderText("0", Font_kaiti, 520, 200, 60, SDL_Color{ 255,255,255 });
-			if (time / 60 < 10)
+			if (record / 60 < 10)
 				win->RenderText("0", Font_kaiti, 430, 200, 60, SDL_Color{ 255,255,255 });
 
 			win->RenderText("Final Time", Font_kaiti, 150, 310, 50, SDL_Color{ 255,255,255 });
