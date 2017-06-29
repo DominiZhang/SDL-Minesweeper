@@ -68,6 +68,7 @@ void gameScene::update()
 {
 	switch (state)
 	{
+	case Esc:
 	case Gaming:
 		if (isclick)
 		{
@@ -113,6 +114,9 @@ void gameScene::rend()
 		break;
 	case Lose:
 		rend_lose();
+		break;
+	case Esc:
+		rend_esc();
 		break;
 	}
 
@@ -178,6 +182,16 @@ void gameScene::mouseEvent()
 				init();
 			}
 			break;
+		case Esc:
+			if ((x > 100 && x < 100 + 250) && (y > Win_H - 100 && y < Win_H - 100 + 50))
+			{
+				isover = true;
+			}
+			else if ((x > Win_L - 100 - 250 && x < Win_L - 100) && (y > Win_H - 100 && y < Win_H - 100 + 50))
+			{
+				state = Gaming;
+			}
+			break;
 		}
 	}
 
@@ -211,7 +225,24 @@ void gameScene::keyEvent()
 	switch (events.key.keysym.sym)
 	{
 	case SDLK_ESCAPE:
-		isover = true;
+		switch (state)
+		{
+		case gameScene::Gaming:
+			state = Esc;
+			break;
+		case gameScene::Win:
+			saveTime();
+			isover = true;
+			break;
+		case gameScene::Lose:
+			isover = true;
+			break;
+		case gameScene::Esc:
+			state = Gaming;
+			break;
+		default:
+			break;
+		}
 		break;
 	}
 }
@@ -277,8 +308,8 @@ void gameScene::setNum()
 
 void gameScene::saveTime()
 {
-	if (time < readHiScore(level)|| readHiScore(level)>=10000)
-		saveHiScore(time,level);
+	if (time < readHiScore(level) || readHiScore(level) >= 10000)
+		saveHiScore(time, level);
 }
 
 void gameScene::digBomb(int x, int y)
@@ -290,9 +321,13 @@ void gameScene::digBomb(int x, int y)
 		{
 			state = Lose;
 		}
-		else
+		else if (map[x][y][0] == 0)
 		{
 			surchNum(x, y, 1);
+		}
+		else
+		{
+			surchNum(x, y, 0);
 		}
 	}
 }
@@ -304,12 +339,12 @@ void gameScene::surchNum(int x, int y, int deep)
 		{
 			if (map[x + direct[k][0]][y + direct[k][1]][1] == 0 || map[x + direct[k][0]][y + direct[k][1]][1] == 2)
 			{
-				if (map[x + direct[k][0]][y + direct[k][1]][0] > 0 && map[x + direct[k][0]][y + direct[k][1]][0] < 9)
+				if (map[x + direct[k][0]][y + direct[k][1]][0] > 0 && map[x + direct[k][0]][y + direct[k][1]][0] < 9 && map[x + direct[k][0]][y + direct[k][1]][1] != 1)
 				{
-					if (deep > 1)
+					if (deep)
 						map[x + direct[k][0]][y + direct[k][1]][1] = -1;
 				}
-				else if (map[x + direct[k][0]][y + direct[k][1]][0] == 0)
+				else if (map[x + direct[k][0]][y + direct[k][1]][0] == 0 && map[x + direct[k][0]][y + direct[k][1]][1] != 1)
 				{
 					map[x + direct[k][0]][y + direct[k][1]][1] = -1;
 					surchNum(x + direct[k][0], y + direct[k][1], deep++);
@@ -504,6 +539,10 @@ void gameScene::rend_button()
 			win->Draw(win->mPicture->again, Win_L - 350, Win_H - 100);
 		}
 		break;
+	case gameScene::Esc:
+		win->Draw(win->mPicture->menu, 100, Win_H - 100);
+		win->Draw(win->mPicture->returngame, Win_L - 350, Win_H - 100);
+		break;
 	default:
 		break;
 	}
@@ -519,6 +558,7 @@ void gameScene::rend_buttoneffect()
 
 			break;
 		case gameScene::Win:
+		case gameScene::Lose:
 			if (count / 3 - mapw > 5)
 			{
 				if ((events.motion.x > 100 && events.motion.x < 100 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
@@ -531,17 +571,14 @@ void gameScene::rend_buttoneffect()
 				}
 			}
 			break;
-		case gameScene::Lose:
-			if (count / 3 - mapw > 5)
+		case gameScene::Esc:
+			if ((events.motion.x > 100 && events.motion.x < 100 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
 			{
-				if ((events.motion.x > 100 && events.motion.x < 100 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
-				{
-					boxRGBA(win->getRenderer(), 100 - 2, Win_H - 100 - 2, 100 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
-				}
-				else if ((events.motion.x > Win_L - 350 && events.motion.x < Win_L - 350 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
-				{
-					boxRGBA(win->getRenderer(), Win_L - 350 - 2, Win_H - 100 - 2, Win_L - 350 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
-				}
+				boxRGBA(win->getRenderer(), 100 - 2, Win_H - 100 - 2, 100 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
+			}
+			else if ((events.motion.x > Win_L - 350 && events.motion.x < Win_L - 350 + 250) && (events.motion.y > Win_H - 100 && events.motion.y < Win_H - 100 + 50))
+			{
+				boxRGBA(win->getRenderer(), Win_L - 350 - 2, Win_H - 100 - 2, Win_L - 350 + 250 + 2, Win_H - 100 + 50 + 2, 0, 122, 204, 255);
 			}
 			break;
 		default:
@@ -624,4 +661,10 @@ void gameScene::rend_win()
 				win->RenderText("0", Font_kaiti, 430, 300, 60, SDL_Color{ 255,255,255 });
 		}
 	}
+}
+
+void gameScene::rend_esc()
+{
+	boxRGBA(win->getRenderer(), 0, 0, Win_L, Win_H, 0, 0, 0, 100);
+	win->RenderText("Esc", Font_kaiti, 280, 160, 150, SDL_Color{ 255,255,255 });
 }

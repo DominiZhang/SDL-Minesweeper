@@ -7,7 +7,8 @@ class gameScene
 	{
 		Gaming,
 		Win,
-		Lose
+		Lose,
+		Esc
 	};
 
 	int direct[8][2] = { { 0,-1 },{ 1,-1 },{ 1,0 },{ 1,1 },{ 0,1 },{ -1,1 },{ -1,0 },{ -1,-1 } };
@@ -49,6 +50,7 @@ private:
 	void rend_buttoneffect();
 	void rend_lose();
 	void rend_win();
+	void rend_esc();
 
 private:
 	Window *win;
